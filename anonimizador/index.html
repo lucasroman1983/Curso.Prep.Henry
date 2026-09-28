@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anonimizador de Actos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root {
+    --fondo: #EEF0EC;
+    --hoja: #FBFBF8;
+    --tinta: #1D2320;
+    --tenue: #5C6660;
+    --linea: #D3D8D2;
+    --sello: #4A3A8C;
+    --sello-suave: #E6E2F3;
+    --tachado: #1D2320;
+    --tachado-texto: #F3F1EA;
+    --alerta: #8A4B0F;
+    --alerta-fondo: #F7EBDC;
+    --ok: #2F6B45;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --fondo: #151917; --hoja: #1D2220; --tinta: #E4E7E2; --tenue: #9AA39D;
+      --linea: #333B37; --sello: #B3A5EE; --sello-suave: #2C2744;
+      --tachado: #E4E7E2; --tachado-texto: #151917;
+      --alerta: #E7B27A; --alerta-fondo: #33271B; --ok: #83C79B;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --fondo: #151917; --hoja: #1D2220; --tinta: #E4E7E2; --tenue: #9AA39D;
+    --linea: #333B37; --sello: #B3A5EE; --sello-suave: #2C2744;
+    --tachado: #E4E7E2; --tachado-texto: #151917;
+    --alerta: #E7B27A; --alerta-fondo: #33271B; --ok: #83C79B;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--fondo);
+    color: var(--tinta);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-inline: 16px;
+    padding-block: 24px 48px;
+  }
+  .marco { max-width: 1320px; margin-inline: auto; display: grid; gap: 20px; }
+
+  header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 1.15; margin: 0; text-wrap: balance; }
+  .bajada { margin: 4px 0 0; color: var(--tenue); max-width: 62ch; }
+  .local {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--ok); border: 1px solid currentColor; padding: 4px 10px; border-radius: 3px; white-space: nowrap;
+  }
+
+  .mesa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
+  @media (max-width: 1100px) { .mesa { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .panel { grid-column: 1 / -1; } }
+  @media (max-width: 720px) { .mesa { grid-template-columns: minmax(0, 1fr); } }
+
+  .hoja { background: var(--hoja); border: 1px solid var(--linea); border-radius: 4px; display: flex; flex-direction: column; height: clamp(420px, 78vh, 920px); }
+  .hoja-cab {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 10px 14px; border-bottom: 1px solid var(--linea);
+  }
+  .rotulo { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); }
+  .acciones { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  textarea, .salida {
+    flex: 1; width: 100%; border: 0; margin: 0; background: transparent; color: var(--tinta);
+    font-family: var(--serif); font-size: 15.5px; line-height: 1.65; padding: 16px 18px;
+    white-space: pre-wrap; overflow-wrap: anywhere; min-height: 0; overflow: auto;
+  }
+  textarea { resize: none; outline: none; }
+  textarea:focus-visible { box-shadow: inset 0 0 0 2px var(--sello); }
+
+
+  .marca {
+    font-family: var(--mono); font-size: .82em; font-weight: 500; white-space: nowrap;
+    background: var(--sello-suave); color: var(--sello); padding: 1px 5px; border-radius: 2px;
+    border: 1px solid color-mix(in srgb, var(--sello) 35%, transparent);
+    cursor: help;
+  }
+  .salida.tachar .marca { background: var(--tachado); color: transparent; border-color: var(--tachado); user-select: none; }
+
+  button, .boton {
+    font: 500 13px var(--sans); color: var(--tinta); background: var(--hoja);
+    border: 1px solid var(--linea); border-radius: 3px; padding: 6px 11px; cursor: pointer;
+  }
+  button:hover { border-color: var(--tenue); }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sello); outline-offset: 2px; }
+  button.principal { background: var(--sello); border-color: var(--sello); color: var(--hoja); }
+
+  .panel { display: grid; gap: 16px; }
+  .bloque { background: var(--hoja); border: 1px solid var(--linea); border-radius: 4px; padding: 14px; display: grid; gap: 10px; }
+  .bloque h2 { margin: 0; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); }
+  .tipos { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 14px; }
+  .tipos label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+  .tipos .n { font-family: var(--mono); font-size: 12px; color: var(--tenue); font-variant-numeric: tabular-nums; align-self: center; }
+  .tipos .n.hay { color: var(--sello); font-weight: 500; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--sello); }
+  .campo { display: grid; gap: 4px; font-size: 13px; color: var(--tenue); }
+  .campo textarea {
+    flex: none; resize: vertical;
+    min-height: 64px; font-family: var(--sans); font-size: 13.5px; line-height: 1.45; padding: 8px 10px;
+    border: 1px solid var(--linea); border-radius: 3px; background: var(--fondo); color: var(--tinta);
+  }
+  .radios { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
+  .radios label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+
+  .tabla-env { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-family: var(--mono); font-weight: 500; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--tenue); }
+  td.et { font-family: var(--mono); color: var(--sello); white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+
+  .aviso { background: var(--alerta-fondo); color: var(--alerta); border-radius: 3px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
+  .nota { font-size: 12.5px; color: var(--tenue); margin: 0; }
+  .estado { font-size: 12.5px; color: var(--ok); min-height: 1.2em; }
+  #archivo { display: none; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+</head>
+<body>
+<div class="marco">
+  <header>
+    <div>
+      <h1>Anonimizador de actos administrativos</h1>
+      <p class="bajada">Pegá el texto de una resolución, disposición, decreto o dictamen. Los datos personales se reemplazan por etiquetas consistentes: la misma persona conserva la misma etiqueta en todo el acto.</p>
+    </div>
+    <span class="local">El texto no sale de este navegador</span>
+  </header>
+
+  <div class="mesa">
+    <section class="hoja" aria-label="Texto original">
+      <div class="hoja-cab">
+        <span class="rotulo">Original</span>
+        <div class="acciones">
+          <label class="boton" for="archivo">Abrir .txt</label>
+          <input type="file" id="archivo" accept=".txt,text/plain">
+          <button type="button" id="limpiar">Vaciar</button>
+          <button type="button" id="cargar-ejemplo">Ejemplo</button>
+        </div>
+      </div>
+      <textarea id="entrada" spellcheck="false" aria-label="Texto del acto"></textarea>
+    </section>
+
+    <section class="hoja" aria-label="Texto anonimizado">
+      <div class="hoja-cab">
+        <span class="rotulo">Anonimizado</span>
+        <div class="acciones">
+          <button type="button" id="ver-tachado" aria-pressed="false">Ver tachado</button>
+          <button type="button" class="principal" id="copiar">Copiar texto</button>
+        </div>
+      </div>
+      <div class="salida" id="salida" tabindex="0"></div>
+    </section>
+
+    <aside class="panel">
+      <div class="bloque">
+        <h2>Qué ocultar</h2>
+        <div class="tipos" id="tipos"></div>
+      </div>
+
+      <div class="bloque">
+        <h2>Personas</h2>
+        <div class="radios">
+          <label><input type="radio" name="modo" id="modo-etiqueta" value="etiqueta" checked> [PERSONA 1]</label>
+          <label><input type="radio" name="modo" id="modo-iniciales" value="iniciales"> Iniciales</label>
+        </div>
+        <label class="campo" for="preservar">Dejar visibles (uno por línea)
+          <textarea id="preservar" placeholder="Funcionarios firmantes, organismos…"></textarea>
+        </label>
+        <label class="campo" for="adicionales">Ocultar además (uno por línea)
+          <textarea id="adicionales" placeholder="Apodos, barrios, nombres de comercios…"></textarea>
+        </label>
+      </div>
+
+      <div class="aviso">La detección es automática. Leé el resultado completo antes de publicarlo o incorporarlo a un expediente: un nombre sin cargo ni tratamiento delante puede pasar sin detectar. Usá “Ocultar además” para esos casos.</div>
+    </aside>
+  </div>
+
+  <section class="bloque" aria-label="Tabla de correspondencias">
+    <div class="hoja-cab" style="padding:0;border:0">
+      <h2>Tabla de correspondencias</h2>
+      <div class="acciones">
+        <button type="button" id="copiar-tabla">Copiar tabla</button>
+      </div>
+    </div>
+    <p class="nota">Contiene los datos originales. No la adjuntes al acto publicado; guardala solo si necesitás revertir la anonimización.</p>
+    <div class="tabla-env">
+      <table>
+        <thead><tr><th>Etiqueta</th><th>Tipo</th><th>Valor original</th><th style="text-align:right">Veces</th></tr></thead>
+        <tbody id="tabla"></tbody>
+      </table>
+    </div>
+    <div class="estado" id="estado" role="status"></div>
+  </section>
+</div>
+
+<script src="anonimizador.js"></script>
+<script>
+(function () {
+  'use strict';
+  var A = window.Anonimizador;
+  var $ = function (id) { return document.getElementById(id); };
+
+  var EJEMPLO = [
+    'GOBIERNO DE LA CIUDAD DE BUENOS AIRES',
+    'MINISTERIO DE SEGURIDAD',
+    '',
+    'RESOLUCIÓN N° 1234/MSGC/2026',
+    '',
+    'Buenos Aires, 15 de septiembre de 2026',
+    '',
+    'VISTO: El Expediente Electrónico N° EX-2026-12345678-GCABA-DGSUMA, la Ley N° 5.688, el Decreto N° 53/17, y',
+    '',
+    'CONSIDERANDO:',
+    '',
+    'Que por las actuaciones citadas en el Visto tramitó el sumario administrativo instruido al Oficial Primero LP 12.345 PÉREZ GÓMEZ, Juan Carlos (D.N.I. N° 28.456.789, CUIL 20-28456789-3), con domicilio real en la calle Hipólito Yrigoyen 1234, piso 3, depto. B, de esta Ciudad;',
+    '',
+    'Que el hecho fue denunciado por la Sra. María de los Ángeles FERNÁNDEZ, DNI 31.222.333, teléfono 11 4567-8901, correo electrónico mfernandez@gmail.com, quien refirió que el vehículo dominio AB 123 CD fue retenido sin causa;',
+    '',
+    'Que el sumariado Pérez Gómez presentó su descargo a través de su letrado, el Dr. Roberto Luis Álvarez, quien ofreció como testigo al Sargento Diego RAMÍREZ (LP 45678);',
+    '',
+    'Que el Oficial Pérez Gómez, nacido el 03/04/1985, percibió haberes en la cuenta CBU 0720123420000001234567;',
+    '',
+    'Que la Dirección General de Asuntos Jurídicos tomó la intervención de su competencia;',
+    '',
+    'Que el monto del perjuicio asciende a $ 1.250.000;',
+    '',
+    'Por ello, en uso de las facultades conferidas por la Ley N° 5.688,',
+    '',
+    'EL MINISTRO DE SEGURIDAD',
+    'RESUELVE:',
+    '',
+    'Artículo 1°.- Aplícase al Oficial Primero LP 12.345 PÉREZ GÓMEZ, Juan Carlos la sanción de cesantía.',
+    '',
+    'Artículo 2°.- Regístrese, notifíquese al interesado y comuníquese a la Superintendencia de Recursos Humanos.',
+    '',
+    'Horacio GIMÉNEZ',
+    'Ministro de Seguridad'
+  ].join('\n');
+
+  var NOMBRES_TIPO = {
+    'PERSONA': 'Nombres de personas',
+    'DNI': 'DNI y documentos',
+    'CUIT/CUIL': 'CUIT / CUIL',
+    'LEGAJO': 'Legajo (LP)',
+    'DOMICILIO': 'Domicilios',
+    'TELÉFONO': 'Teléfonos',
+    'EMAIL': 'Correos electrónicos',
+    'CBU/CVU': 'CBU / CVU',
+    'DOMINIO': 'Dominios de vehículos',
+    'FECHA DE NACIMIENTO': 'Fechas de nacimiento'
+  };
+
+  var tiposCont = $('tipos');
+  Object.keys(NOMBRES_TIPO).forEach(function (t, i) {
+    var id = 'tipo-' + i;
+    var label = document.createElement('label');
+    label.setAttribute('for', id);
+    label.innerHTML = '<input type="checkbox" checked id="' + id + '" data-tipo="' + t + '"> ';
+    label.appendChild(document.createTextNode(NOMBRES_TIPO[t]));
+    var n = document.createElement('span');
+    n.className = 'n';
+    n.dataset.tipo = t;
+    n.textContent = '0';
+    tiposCont.appendChild(label);
+    tiposCont.appendChild(n);
+  });
+
+  var guardar = function (k, v) { try { localStorage.setItem('anon-' + k, v); } catch (e) {} };
+  var leer = function (k) { try { return localStorage.getItem('anon-' + k); } catch (e) { return null; } };
+
+  var lineas = function (s) { return s.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); };
+  var ultimo = null;
+
+  function opciones() {
+    var tipos = {};
+    document.querySelectorAll('[data-tipo]').forEach(function (c) { if (c.type === 'checkbox') tipos[c.dataset.tipo] = c.checked; });
+    return {
+      tipos: tipos,
+      preservar: lineas($('preservar').value),
+      adicionales: lineas($('adicionales').value),
+      modoPersona: $('modo-iniciales').checked ? 'iniciales' : 'etiqueta'
+    };
+  }
+
+  function procesar() {
+    var texto = $('entrada').value;
+    var r = A.anonimizar(texto, opciones());
+    ultimo = r;
+
+    var salida = $('salida');
+    salida.textContent = '';
+    var cursor = 0;
+    r.tramos.forEach(function (t) {
+      salida.appendChild(document.createTextNode(texto.slice(cursor, t.ini)));
+      var s = document.createElement('span');
+      s.className = 'marca';
+      s.textContent = t.etiqueta;
+      s.title = t.tipo;
+      salida.appendChild(s);
+      cursor = t.fin;
+    });
+    salida.appendChild(document.createTextNode(texto.slice(cursor)));
+
+    var cuenta = {};
+    r.entidades.forEach(function (e) { cuenta[e.tipo] = (cuenta[e.tipo] || 0) + 1; });
+    document.querySelectorAll('.tipos .n').forEach(function (n) {
+      var c = cuenta[n.dataset.tipo] || 0;
+      n.textContent = c;
+      n.classList.toggle('hay', c > 0);
+    });
+
+    var tbody = $('tabla');
+    tbody.textContent = '';
+    r.entidades.forEach(function (e) {
+      var tr = document.createElement('tr');
+      [['et', e.etiqueta], ['', NOMBRES_TIPO[e.tipo] || e.tipo], ['', e.valores.join(' · ')], ['num', e.apariciones]]
+        .forEach(function (c) {
+          var td = document.createElement('td');
+          if (c[0]) td.className = c[0];
+          td.textContent = c[1];
+          tr.appendChild(td);
+        });
+      tbody.appendChild(tr);
+    });
+    if (!r.entidades.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="nota">No se detectaron datos personales.</td></tr>';
+    }
+
+    guardar('preservar', $('preservar').value);
+    guardar('adicionales', $('adicionales').value);
+  }
+
+  var espera;
+  function programar() { clearTimeout(espera); espera = setTimeout(procesar, 120); }
+
+  function avisar(msg) {
+    $('estado').textContent = msg;
+    clearTimeout(avisar.t);
+    avisar.t = setTimeout(function () { $('estado').textContent = ''; }, 2500);
+  }
+
+  function copiar(texto, msg, nodo) {
+    var ok = function () { avisar(msg); };
+    var respaldo = function () {
+      var sel = window.getSelection();
+      var rango = document.createRange();
+      rango.selectNodeContents(nodo);
+      sel.removeAllRanges();
+      sel.addRange(rango);
+      avisar('Texto seleccionado: copialo con Ctrl+C.');
+    };
+    try { navigator.clipboard.writeText(texto).then(ok, respaldo); } catch (e) { respaldo(); }
+  }
+
+  $('entrada').addEventListener('input', programar);
+  $('preservar').addEventListener('input', programar);
+  $('adicionales').addEventListener('input', programar);
+  document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(function (c) { c.addEventListener('change', procesar); });
+
+  $('limpiar').addEventListener('click', function () { $('entrada').value = ''; procesar(); $('entrada').focus(); });
+  $('cargar-ejemplo').addEventListener('click', function () {
+    $('entrada').value = EJEMPLO;
+    if (!$('preservar').value.trim()) $('preservar').value = 'Horacio Giménez';
+    procesar();
+  });
+
+  $('archivo').addEventListener('change', function (ev) {
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var lector = new FileReader();
+    lector.onload = function () { $('entrada').value = String(lector.result); procesar(); avisar('Cargado: ' + f.name); };
+    lector.readAsText(f, 'utf-8');
+    ev.target.value = '';
+  });
+
+  $('ver-tachado').addEventListener('click', function () {
+    var on = $('salida').classList.toggle('tachar');
+    this.setAttribute('aria-pressed', String(on));
+    this.textContent = on ? 'Ver etiquetas' : 'Ver tachado';
+  });
+
+  $('copiar').addEventListener('click', function () {
+    if (ultimo) copiar(ultimo.texto, 'Texto anonimizado copiado.', $('salida'));
+  });
+  $('copiar-tabla').addEventListener('click', function () {
+    if (!ultimo) return;
+    var tsv = ['Etiqueta\tTipo\tValor original\tVeces'].concat(ultimo.entidades.map(function (e) {
+      return [e.etiqueta, e.tipo, e.valores.join(' | '), e.apariciones].join('\t');
+    })).join('\n');
+    copiar(tsv, 'Tabla copiada: se pega en Excel como columnas.', $('tabla'));
+  });
+
+  var p = leer('preservar'); if (p) $('preservar').value = p;
+  var a = leer('adicionales'); if (a) $('adicionales').value = a;
+  $('entrada').value = EJEMPLO;
+  if (!$('preservar').value.trim()) $('preservar').value = 'Horacio Giménez';
+  procesar();
+})();
+</script>
+</body>
+</html>
