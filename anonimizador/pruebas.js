@@ -60,3 +60,19 @@ test('tolera saltos de renglón dentro de nombres (texto extraído de PDF)', () 
   const { texto } = anonimizar('su letrado, el Dr. Roberto Luis\nÁlvarez, ofreció al Sargento Diego\nRAMÍREZ (LP\n45678);\n\nHoracio GIMÉNEZ\nMinistro de Seguridad');
   assert.strictEqual(texto, 'su letrado, el Dr. [PERSONA 1], ofreció al Sargento [PERSONA 2] (LP\n[LEGAJO 1]);\n\nHoracio GIMÉNEZ\nMinistro de Seguridad');
 });
+
+test('detecta la edad y tolera finales de renglón de Windows', () => {
+  const { texto } = anonimizar('El agente PÉREZ, Juan, de 41 años de edad.\r\nEl Sr. Juan\r\nGómez firmó. Plazo de 10 años.');
+  assert.strictEqual(texto, 'El agente [PERSONA 1], de [EDAD 1] de edad.\nEl Sr. [PERSONA 2] firmó. Plazo de 10 años.');
+});
+
+test('exporta un .docx válido con las etiquetas en negrita', () => {
+  const { crearDocx, crc32 } = require('./exportar');
+  assert.strictEqual(crc32(Buffer.from('123456789')), 0xCBF43926);
+  const bytes = Buffer.from(crearDocx('Línea 1 & <x>\n\nAl agente [PERSONA 1].'));
+  assert.strictEqual(bytes.readUInt32LE(0), 0x04034b50);
+  const xml = bytes.toString('utf8');
+  assert.ok(xml.includes('word/document.xml'));
+  assert.ok(xml.includes('Línea 1 &amp; &lt;x&gt;'));
+  assert.ok(xml.includes('<w:rPr><w:b/></w:rPr><w:t xml:space="preserve">[PERSONA 1]</w:t>'));
+});

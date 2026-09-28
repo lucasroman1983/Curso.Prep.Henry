@@ -11,7 +11,7 @@
  *   --ocultar "Término;Otro"    Términos que se ocultan siempre.
  *   --iniciales                 Reemplaza personas por iniciales (J. C. P.).
  *   --sin tipo1,tipo2           Desactiva detectores (persona, dni, cuit, legajo,
- *                               domicilio, telefono, email, cbu, dominio, nacimiento).
+ *                               domicilio, telefono, email, cbu, dominio, nacimiento, edad).
  */
 'use strict';
 const fs = require('fs');
@@ -20,7 +20,7 @@ const { anonimizar, correspondenciasCSV } = require('./anonimizador');
 const TIPOS = {
   persona: 'PERSONA', dni: 'DNI', cuit: 'CUIT/CUIL', cuil: 'CUIT/CUIL', legajo: 'LEGAJO',
   domicilio: 'DOMICILIO', telefono: 'TELÉFONO', email: 'EMAIL', cbu: 'CBU/CVU',
-  dominio: 'DOMINIO', patente: 'DOMINIO', nacimiento: 'FECHA DE NACIMIENTO'
+  dominio: 'DOMINIO', patente: 'DOMINIO', nacimiento: 'FECHA DE NACIMIENTO', edad: 'EDAD'
 };
 
 const args = process.argv.slice(2);

@@ -222,6 +222,14 @@
       clave: normalizar
     },
     {
+      // "de 41 años de edad", "edad: 41 años".
+      tipo: 'EDAD',
+      prioridad: 1,
+      re: INI + '(?<v>\\d{1,3}(?:[ \\t]+\\n?|\\n)[ \\t]*' + ci('años') + ')(?=(?:[ \\t]+\\n?|\\n)[ \\t]*' + ci('de edad') + ')|' +
+        ci('edad') + '[ \\t]*:?[ \\t]*(?<v2>\\d{1,3}(?:[ \\t]+' + ci('años') + ')?)' + FIN,
+      clave: soloDigitos
+    },
+    {
       tipo: 'FECHA DE NACIMIENTO',
       prioridad: 1,
       re: '(?:' + ci('nacido el') + '|' + ci('nacida el') + '|' + ci('nacido en fecha') + '|' +
@@ -437,7 +445,7 @@
     tipos: {
       PERSONA: true, DNI: true, 'CUIT/CUIL': true, LEGAJO: true, DOMICILIO: true,
       'TELÉFONO': true, EMAIL: true, 'CBU/CVU': true, DOMINIO: true,
-      'FECHA DE NACIMIENTO': true
+      'FECHA DE NACIMIENTO': true, EDAD: true
     },
     // Nombres o datos que deben quedar visibles (p. ej. funcionarios firmantes).
     preservar: [],
@@ -458,7 +466,9 @@
   }
 
   function anonimizar(texto, opciones) {
-    texto = String(texto || '');
+    // Los .txt de Windows traen \r\n: se unifican para que un nombre partido
+    // en dos renglones se detecte igual.
+    texto = String(texto || '').replace(/\r\n?/g, '\n');
     var op = Object.assign({}, OPCIONES_POR_DEFECTO, opciones || {});
     op.tipos = Object.assign({}, OPCIONES_POR_DEFECTO.tipos, (opciones && opciones.tipos) || {});
     var preservados = (op.preservar || []).map(normalizar).filter(Boolean);
@@ -480,8 +490,9 @@
       var re = new RegExp(d.re, 'gdu');
       var m;
       while ((m = re.exec(texto))) {
-        var idx = m.indices.groups.v;
-        var v = m.groups.v.replace(/[\s,.]+$/, '');
+        var g = m.groups.v !== undefined ? 'v' : 'v2';
+        var idx = m.indices.groups[g];
+        var v = m.groups[g].replace(/[\s,.]+$/, '');
         candidatos.push({
           ini: idx[0], fin: idx[0] + v.length, tipo: d.tipo, valor: v,
           prioridad: d.prioridad, clave: d.clave(v)

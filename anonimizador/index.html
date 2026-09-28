@@ -4,44 +4,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anonimizador de Actos</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
   :root {
-    --fondo: #EEF0EC;
-    --hoja: #FBFBF8;
-    --tinta: #1D2320;
-    --tenue: #5C6660;
-    --linea: #D3D8D2;
-    --sello: #4A3A8C;
-    --sello-suave: #E6E2F3;
-    --tachado: #1D2320;
-    --tachado-texto: #F3F1EA;
-    --alerta: #8A4B0F;
-    --alerta-fondo: #F7EBDC;
-    --ok: #2F6B45;
-    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: light;
+    --fondo: #EDEFEB;
+    --hoja: #FCFCFA;
+    --hundido: #F3F4F0;
+    --tinta: #1C2220;
+    --tenue: #59635D;
+    --linea: #D2D7D0;
+    --linea-fuerte: #A9B1AB;
+    --sello: #47378A;
+    --sello-hover: #3A2C73;
+    --sello-suave: #E7E3F4;
+    --sello-borde: #B9AEDD;
+    --sobre-sello: #FFFFFF;
+    --tachado: #1C2220;
+    --alerta: #8A4A0C;
+    --alerta-fondo: #F8ECDD;
+    --ok: #2D6A43;
+    --ok-fondo: #E3F0E6;
+    --serif: Cambria, "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: Consolas, "Cascadia Mono", "SFMono-Regular", Menlo, "Liberation Mono", monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --fondo: #151917; --hoja: #1D2220; --tinta: #E4E7E2; --tenue: #9AA39D;
-      --linea: #333B37; --sello: #B3A5EE; --sello-suave: #2C2744;
-      --tachado: #E4E7E2; --tachado-texto: #151917;
-      --alerta: #E7B27A; --alerta-fondo: #33271B; --ok: #83C79B;
+      --fondo: #141816; --hoja: #1C211F; --hundido: #171B19; --tinta: #E3E6E1; --tenue: #9BA49E;
+      --linea: #323A36; --linea-fuerte: #4B5550; --sello: #B4A7EF; --sello-hover: #C9BFF5;
+      --sello-suave: #2B2643; --sello-borde: #564C86; --sobre-sello: #16121F; --tachado: #E3E6E1;
+      --alerta: #E9B57E; --alerta-fondo: #33271A; --ok: #86C89D; --ok-fondo: #1D2B22;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --fondo: #151917; --hoja: #1D2220; --tinta: #E4E7E2; --tenue: #9AA39D;
-    --linea: #333B37; --sello: #B3A5EE; --sello-suave: #2C2744;
-    --tachado: #E4E7E2; --tachado-texto: #151917;
-    --alerta: #E7B27A; --alerta-fondo: #33271B; --ok: #83C79B;
+    --fondo: #141816; --hoja: #1C211F; --hundido: #171B19; --tinta: #E3E6E1; --tenue: #9BA49E;
+    --linea: #323A36; --linea-fuerte: #4B5550; --sello: #B4A7EF; --sello-hover: #C9BFF5;
+    --sello-suave: #2B2643; --sello-borde: #564C86; --sobre-sello: #16121F; --tachado: #E3E6E1;
+    --alerta: #E9B57E; --alerta-fondo: #33271A; --ok: #86C89D; --ok-fondo: #1D2B22;
   }
 
   * { box-sizing: border-box; }
+  html, body { margin: 0; }
   body {
     background: var(--fondo);
     color: var(--tinta);
@@ -49,140 +54,164 @@
     font-size: 15px;
     line-height: 1.5;
     padding-inline: 16px;
-    padding-block: 24px 48px;
+    padding-block: 22px 48px;
   }
-  .marco { max-width: 1320px; margin-inline: auto; display: grid; gap: 20px; }
+  .marco { max-width: 1360px; margin-inline: auto; display: grid; gap: 18px; }
 
-  header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
-  h1 { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 1.15; margin: 0; text-wrap: balance; }
-  .bajada { margin: 4px 0 0; color: var(--tenue); max-width: 62ch; }
-  .local {
-    font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
-    color: var(--ok); border: 1px solid currentColor; padding: 4px 10px; border-radius: 3px; white-space: nowrap;
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+  h1 { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 1.15; margin: 0; text-wrap: balance; }
+  .bajada { margin: 4px 0 0; color: var(--tenue); max-width: 68ch; }
+  .garantias { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pastilla {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .03em; white-space: nowrap;
+    color: var(--ok); background: var(--ok-fondo); padding: 3px 9px; border-radius: 3px;
   }
 
-  .mesa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
-  @media (max-width: 1100px) { .mesa { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .panel { grid-column: 1 / -1; } }
-  @media (max-width: 720px) { .mesa { grid-template-columns: minmax(0, 1fr); } }
+  .banda { border-radius: 4px; padding: 10px 14px; font-size: 14px; }
+  .banda.alerta { background: var(--alerta-fondo); color: var(--alerta); }
 
-  .hoja { background: var(--hoja); border: 1px solid var(--linea); border-radius: 4px; display: flex; flex-direction: column; height: clamp(420px, 78vh, 920px); }
-  .hoja-cab {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
-    padding: 10px 14px; border-bottom: 1px solid var(--linea);
-  }
-  .rotulo { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); }
-  .acciones { display: flex; flex-wrap: wrap; gap: 6px; }
-
-  textarea, .salida {
-    flex: 1; width: 100%; border: 0; margin: 0; background: transparent; color: var(--tinta);
-    font-family: var(--serif); font-size: 15.5px; line-height: 1.65; padding: 16px 18px;
-    white-space: pre-wrap; overflow-wrap: anywhere; min-height: 0; overflow: auto;
-  }
-  textarea { resize: none; outline: none; }
-  textarea:focus-visible { box-shadow: inset 0 0 0 2px var(--sello); }
-
-
-  .marca {
-    font-family: var(--mono); font-size: .82em; font-weight: 500; white-space: nowrap;
-    background: var(--sello-suave); color: var(--sello); padding: 1px 5px; border-radius: 2px;
-    border: 1px solid color-mix(in srgb, var(--sello) 35%, transparent);
-    cursor: help;
-  }
-  .salida.tachar .marca { background: var(--tachado); color: transparent; border-color: var(--tachado); user-select: none; }
-
-  button, .boton {
-    font: 500 13px var(--sans); color: var(--tinta); background: var(--hoja);
-    border: 1px solid var(--linea); border-radius: 3px; padding: 6px 11px; cursor: pointer;
-  }
-  button:hover { border-color: var(--tenue); }
-  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--sello); outline-offset: 2px; }
-  button.principal { background: var(--sello); border-color: var(--sello); color: var(--hoja); }
-
-  .panel { display: grid; gap: 16px; }
-  .bloque { background: var(--hoja); border: 1px solid var(--linea); border-radius: 4px; padding: 14px; display: grid; gap: 10px; }
-  .bloque h2 { margin: 0; font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); }
-  .tipos { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 14px; }
-  .tipos label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
-  .tipos .n { font-family: var(--mono); font-size: 12px; color: var(--tenue); font-variant-numeric: tabular-nums; align-self: center; }
-  .tipos .n.hay { color: var(--sello); font-weight: 500; }
-  input[type="checkbox"], input[type="radio"] { accent-color: var(--sello); }
-  .campo { display: grid; gap: 4px; font-size: 13px; color: var(--tenue); }
-  .campo textarea {
-    flex: none; resize: vertical;
-    min-height: 64px; font-family: var(--sans); font-size: 13.5px; line-height: 1.45; padding: 8px 10px;
-    border: 1px solid var(--linea); border-radius: 3px; background: var(--fondo); color: var(--tinta);
-  }
-  .radios { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
-  .radios label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
-
-  .tabla-env { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linea); vertical-align: top; }
-  th { font-family: var(--mono); font-weight: 500; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--tenue); }
-  td.et { font-family: var(--mono); color: var(--sello); white-space: nowrap; }
-  td.num { font-variant-numeric: tabular-nums; text-align: right; }
-
-  .aviso { background: var(--alerta-fondo); color: var(--alerta); border-radius: 3px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
-  .nota { font-size: 12.5px; color: var(--tenue); margin: 0; }
-  .estado { font-size: 12.5px; color: var(--ok); min-height: 1.2em; }
+  /* Carga del acto */
   .carga {
     position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
-    border: 2px dashed color-mix(in srgb, var(--sello) 45%, var(--linea)); border-radius: 6px;
-    background: var(--hoja); padding: 18px 20px; cursor: pointer;
+    border: 2px dashed var(--sello-borde); border-radius: 6px;
+    background: var(--hoja); padding: 16px 20px; cursor: pointer;
   }
   .carga:hover, .carga.encima { border-color: var(--sello); background: var(--sello-suave); }
   .carga:focus-within { outline: 2px solid var(--sello); outline-offset: 2px; }
-  .carga-icono {
-    flex: none; width: 44px; height: 54px; border: 2px solid var(--sello); border-radius: 3px;
-    position: relative; background: var(--hoja);
+  .carga-icono { flex: none; width: 40px; height: 50px; border: 2px solid var(--sello); border-radius: 3px; position: relative; background: var(--hoja); }
+  .carga-icono::before {
+    content: ""; position: absolute; left: 7px; right: 7px; top: 14px; height: 2px; background: var(--sello);
+    box-shadow: 0 7px 0 var(--sello), 0 14px 0 var(--sello), 0 21px 0 var(--sello);
   }
-  .carga-icono::before, .carga-icono::after {
-    content: ""; position: absolute; left: 8px; right: 8px; height: 2px; background: var(--sello); top: 16px;
-    box-shadow: 0 8px 0 var(--sello), 0 16px 0 var(--sello);
-  }
-  .carga-icono::after { top: auto; bottom: 8px; right: 18px; box-shadow: none; }
-  .carga-texto { flex: 1 1 260px; display: grid; gap: 2px; }
-  .carga-titulo { font-family: var(--serif); font-size: 18px; font-weight: 600; }
-  .carga-sub { font-size: 13px; color: var(--tenue); }
-  .carga-archivo { font-family: var(--mono); font-size: 12.5px; color: var(--sello); overflow-wrap: anywhere; }
+  .carga-texto { flex: 1 1 280px; display: grid; gap: 2px; }
+  .carga-titulo { font-family: var(--serif); font-size: 18px; font-weight: 700; }
+  .carga-sub { font-size: 13.5px; color: var(--tenue); }
+  .carga-archivo { font-family: var(--mono); font-size: 13px; color: var(--sello); overflow-wrap: anywhere; min-height: 1.3em; }
   .carga-archivo.error { color: var(--alerta); }
   .carga input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-</style>
+  /* Resumen */
+  .resumen { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; padding: 2px 2px; font-size: 14px; color: var(--tenue); }
+  .resumen strong { color: var(--tinta); font-variant-numeric: tabular-nums; }
+  .resumen .cifra { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--sello); font-variant-numeric: tabular-nums; }
 
+  /* Mesa de trabajo */
+  .mesa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 310px; gap: 18px; align-items: start; }
+  @media (max-width: 1150px) { .mesa { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .panel { grid-column: 1 / -1; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } }
+  @media (max-width: 760px) { .mesa { grid-template-columns: minmax(0, 1fr); } }
+
+  .hoja { background: var(--hoja); border: 1px solid var(--linea); border-radius: 4px; display: flex; flex-direction: column; height: 76vh; min-height: 420px; max-height: 940px; }
+  .hoja-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--linea); }
+  .rotulo { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); }
+  .acciones { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pie { border-top: 1px solid var(--linea); padding: 7px 12px; font-size: 12.5px; color: var(--tenue); }
+
+  #entrada, .salida {
+    flex: 1; width: 100%; min-height: 0; overflow: auto; border: 0; margin: 0; background: transparent; color: var(--tinta);
+    font-family: var(--serif); font-size: 15.5px; line-height: 1.7; padding: 16px 18px;
+    white-space: pre-wrap; overflow-wrap: break-word;
+  }
+  #entrada { resize: none; outline: none; }
+  #entrada:focus-visible { box-shadow: inset 0 0 0 2px var(--sello); }
+  .salida:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--sello); }
+
+  .marca {
+    font: inherit; font-family: var(--mono); font-size: .8em; font-weight: 700; white-space: nowrap;
+    background: var(--sello-suave); color: var(--sello); padding: 0 5px; border-radius: 2px;
+    border: 1px solid var(--sello-borde); cursor: pointer; line-height: 1.5;
+  }
+  .marca:hover { border-color: var(--sello); }
+  .marca:focus-visible { outline: 2px solid var(--sello); outline-offset: 1px; }
+  .salida.tachar .marca { background: var(--tachado); color: transparent; border-color: var(--tachado); }
+
+  button, .boton {
+    font: 600 13px var(--sans); color: var(--tinta); background: var(--hoja);
+    border: 1px solid var(--linea-fuerte); border-radius: 3px; padding: 6px 11px; cursor: pointer; line-height: 1.3;
+  }
+  button:hover, .boton:hover { border-color: var(--tinta); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, .boton:focus-visible { outline: 2px solid var(--sello); outline-offset: 2px; }
+  button.principal { background: var(--sello); border-color: var(--sello); color: var(--sobre-sello); }
+  button.principal:hover { background: var(--sello-hover); border-color: var(--sello-hover); }
+  button.chico { font-size: 12px; padding: 3px 8px; font-weight: 600; }
+
+  .panel { display: grid; gap: 14px; }
+  .bloque { background: var(--hoja); border: 1px solid var(--linea); border-radius: 4px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+  .bloque h2 { margin: 0; font-family: var(--mono); font-size: 12px; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; color: var(--tenue); }
+  .tipos { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; font-size: 14px; }
+  .tipos label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+  .tipos .n { font-family: var(--mono); font-size: 12.5px; color: var(--tenue); font-variant-numeric: tabular-nums; align-self: center; text-align: right; min-width: 2ch; }
+  .tipos .n.hay { color: var(--sello); font-weight: 700; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--sello); width: 15px; height: 15px; margin: 0; }
+  .campo { display: grid; gap: 4px; font-size: 13px; color: var(--tenue); }
+  .campo textarea {
+    min-height: 70px; resize: vertical; font: 13.5px/1.45 var(--sans); padding: 7px 9px;
+    border: 1px solid var(--linea); border-radius: 3px; background: var(--hundido); color: var(--tinta); width: 100%;
+  }
+  .radios { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
+  .radios label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  .aviso { background: var(--alerta-fondo); color: var(--alerta); border-radius: 4px; padding: 11px 13px; font-size: 13px; line-height: 1.5; }
+  .aviso strong { display: block; margin-bottom: 2px; }
+
+  .tabla-cab { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .tabla-env { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-family: var(--mono); font-weight: 400; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--tenue); }
+  td.et { font-family: var(--mono); color: var(--sello); white-space: nowrap; font-weight: 700; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  td.acc { text-align: right; white-space: nowrap; }
+  .nota { font-size: 12.5px; color: var(--tenue); margin: 0; }
+
+  .aviso-flotante {
+    position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+    background: var(--tinta); color: var(--hoja); padding: 8px 14px; border-radius: 4px; font-size: 13.5px;
+    max-width: calc(100% - 32px); box-shadow: 0 4px 16px rgba(0,0,0,.18); z-index: 10;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
 </head>
 <body>
 <div class="marco">
   <header>
     <div>
       <h1>Anonimizador de actos administrativos</h1>
-      <p class="bajada">Cargá una resolución, disposición, decreto o dictamen. Los datos personales se reemplazan por etiquetas consistentes: la misma persona conserva la misma etiqueta en todo el acto.</p>
+      <p class="bajada">Cargá una resolución, disposición, decreto o dictamen. Los datos personales se reemplazan por etiquetas: la misma persona conserva la misma etiqueta en todo el acto, aunque aparezca escrita de formas distintas.</p>
     </div>
-    <span class="local">El texto no sale de este navegador</span>
+    <div class="garantias">
+      <span class="pastilla">Funciona sin internet</span>
+      <span class="pastilla">El acto no sale de esta computadora</span>
+    </div>
   </header>
+
+  <div class="banda alerta" id="incompatible" hidden>Este navegador es demasiado antiguo para el anonimizador. Abrí este archivo con Google Chrome o Microsoft Edge actualizados.</div>
 
   <label class="carga" id="carga" for="archivo">
     <span class="carga-icono" aria-hidden="true"></span>
     <span class="carga-texto">
       <span class="carga-titulo">Cargar acto administrativo</span>
-      <span class="carga-sub">Arrastrá el archivo acá o hacé clic para elegirlo. PDF (GDE), Word (.docx) o texto (.txt).</span>
+      <span class="carga-sub">Arrastrá el archivo acá o hacé clic para elegirlo. PDF de GDE, Word (.docx) o texto (.txt).</span>
       <span class="carga-archivo" id="carga-archivo" role="status"></span>
     </span>
     <span class="boton">Elegir archivo</span>
     <input type="file" id="archivo" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain">
   </label>
 
+  <div class="resumen" id="resumen" aria-live="polite"></div>
+
   <div class="mesa">
     <section class="hoja" aria-label="Texto original">
       <div class="hoja-cab">
         <span class="rotulo">Original · editable</span>
         <div class="acciones">
+          <button type="button" id="ocultar-seleccion" title="Marcá un texto en el original y ocultalo en todo el acto">Ocultar selección</button>
           <button type="button" id="limpiar">Vaciar</button>
           <button type="button" id="cargar-ejemplo">Ejemplo</button>
         </div>
       </div>
-      <textarea id="entrada" spellcheck="false" aria-label="Texto del acto"></textarea>
+      <textarea id="entrada" spellcheck="false" aria-label="Texto del acto" placeholder="Cargá el acto con el recuadro de arriba o pegá el texto acá."></textarea>
+      <div class="pie">¿Quedó algo sin ocultar? Seleccionalo acá y tocá <b>Ocultar selección</b>.</div>
     </section>
 
     <section class="hoja" aria-label="Texto anonimizado">
@@ -190,10 +219,12 @@
         <span class="rotulo">Anonimizado</span>
         <div class="acciones">
           <button type="button" id="ver-tachado" aria-pressed="false">Ver tachado</button>
-          <button type="button" class="principal" id="copiar">Copiar texto</button>
+          <button type="button" id="copiar">Copiar</button>
+          <button type="button" class="principal descarga" id="bajar-docx">Descargar Word</button>
         </div>
       </div>
-      <div class="salida" id="salida" tabindex="0"></div>
+      <div class="salida" id="salida" tabindex="0" aria-label="Resultado anonimizado"></div>
+      <div class="pie">¿Algo no debía ocultarse? Hacé clic en la etiqueta para dejarlo visible.</div>
     </section>
 
     <aside class="panel">
@@ -208,79 +239,103 @@
           <label><input type="radio" name="modo" id="modo-etiqueta" value="etiqueta" checked> [PERSONA 1]</label>
           <label><input type="radio" name="modo" id="modo-iniciales" value="iniciales"> Iniciales</label>
         </div>
-        <label class="campo" for="preservar">Dejar visibles (uno por línea)
-          <textarea id="preservar" placeholder="Funcionarios firmantes, organismos…"></textarea>
+        <label class="campo" for="preservar">Dejar visibles (uno por renglón)
+          <textarea id="preservar" placeholder="Funcionario firmante, organismos…"></textarea>
         </label>
-        <label class="campo" for="adicionales">Ocultar además (uno por línea)
-          <textarea id="adicionales" placeholder="Apodos, barrios, nombres de comercios…"></textarea>
+        <label class="campo" for="adicionales">Ocultar además (uno por renglón)
+          <textarea id="adicionales" placeholder="Apodos, barrios, comercios…"></textarea>
         </label>
+        <div><button type="button" class="chico" id="restablecer">Restablecer ajustes</button></div>
       </div>
 
-      <div class="aviso">La detección es automática. Leé el resultado completo antes de publicarlo o incorporarlo a un expediente: un nombre sin cargo ni tratamiento delante puede pasar sin detectar. Usá “Ocultar además” para esos casos.</div>
+      <div class="aviso"><strong>Revisá antes de usar el resultado.</strong>La detección es automática. Un nombre suelto, sin cargo ni tratamiento delante, puede pasar sin detectar.</div>
     </aside>
   </div>
 
   <section class="bloque" aria-label="Tabla de correspondencias">
-    <div class="hoja-cab" style="padding:0;border:0">
+    <div class="tabla-cab">
       <h2>Tabla de correspondencias</h2>
       <div class="acciones">
         <button type="button" id="copiar-tabla">Copiar tabla</button>
+        <button type="button" class="descarga" id="bajar-csv">Descargar tabla (Excel)</button>
       </div>
     </div>
-    <p class="nota">Contiene los datos originales. No la adjuntes al acto publicado; guardala solo si necesitás revertir la anonimización.</p>
+    <p class="nota">Contiene los datos originales: no va con el acto publicado. Guardala aparte solo si necesitás revertir la anonimización.</p>
     <div class="tabla-env">
       <table>
-        <thead><tr><th>Etiqueta</th><th>Tipo</th><th>Valor original</th><th style="text-align:right">Veces</th></tr></thead>
+        <thead><tr><th>Etiqueta</th><th>Tipo</th><th>Valor original</th><th style="text-align:right">Veces</th><th></th></tr></thead>
         <tbody id="tabla"></tbody>
       </table>
     </div>
-    <div class="estado" id="estado" role="status"></div>
   </section>
 </div>
 
+<div class="aviso-flotante" id="aviso" role="status" hidden></div>
+
+<script type="text/plain" id="texto-ejemplo">GOBIERNO DE LA CIUDAD DE BUENOS AIRES
+MINISTERIO DE SEGURIDAD
+
+RESOLUCIÓN N° 1234/MSGC/2026
+
+Buenos Aires, 15 de septiembre de 2026
+
+VISTO: El Expediente Electrónico N° EX-2026-12345678-GCABA-DGSUMA, la Ley N° 5.688, el Decreto N° 53/17, y
+
+CONSIDERANDO:
+
+Que por las actuaciones citadas en el Visto tramitó el sumario administrativo instruido al Oficial Primero LP 12.345 PÉREZ GÓMEZ, Juan Carlos (D.N.I. N° 28.456.789, CUIL 20-28456789-3), de 41 años de edad, con domicilio real en la calle Hipólito Yrigoyen 1234, piso 3, depto. B, de esta Ciudad;
+
+Que el hecho fue denunciado por la Sra. María de los Ángeles FERNÁNDEZ, DNI 31.222.333, teléfono 11 4567-8901, correo electrónico mfernandez@gmail.com, quien refirió que el vehículo dominio AB 123 CD fue retenido sin causa;
+
+Que el sumariado Pérez Gómez presentó su descargo a través de su letrado, el Dr. Roberto Luis Álvarez, quien ofreció como testigo al Sargento Diego RAMÍREZ (LP 45678);
+
+Que el Oficial Pérez Gómez, nacido el 03/04/1985, percibió haberes en la cuenta CBU 0720123420000001234567;
+
+Que la Dirección General de Asuntos Jurídicos tomó la intervención de su competencia;
+
+Que el monto del perjuicio asciende a $ 1.250.000;
+
+Por ello, en uso de las facultades conferidas por la Ley N° 5.688,
+
+EL MINISTRO DE SEGURIDAD
+RESUELVE:
+
+Artículo 1°.- Aplícase al Oficial Primero LP 12.345 PÉREZ GÓMEZ, Juan Carlos la sanción de cesantía.
+
+Artículo 2°.- Regístrese, notifíquese al interesado y comuníquese a la Superintendencia de Recursos Humanos.
+
+Horacio GIMÉNEZ
+Ministro de Seguridad</script>
+
+<!-- VENDOR -->
 <script src="anonimizador.js"></script>
+<script src="exportar.js"></script>
 <script>
 (function () {
   'use strict';
-  var A = window.Anonimizador;
-  var $ = function (id) { return document.getElementById(id); };
 
-  var EJEMPLO = [
-    'GOBIERNO DE LA CIUDAD DE BUENOS AIRES',
-    'MINISTERIO DE SEGURIDAD',
-    '',
-    'RESOLUCIÓN N° 1234/MSGC/2026',
-    '',
-    'Buenos Aires, 15 de septiembre de 2026',
-    '',
-    'VISTO: El Expediente Electrónico N° EX-2026-12345678-GCABA-DGSUMA, la Ley N° 5.688, el Decreto N° 53/17, y',
-    '',
-    'CONSIDERANDO:',
-    '',
-    'Que por las actuaciones citadas en el Visto tramitó el sumario administrativo instruido al Oficial Primero LP 12.345 PÉREZ GÓMEZ, Juan Carlos (D.N.I. N° 28.456.789, CUIL 20-28456789-3), con domicilio real en la calle Hipólito Yrigoyen 1234, piso 3, depto. B, de esta Ciudad;',
-    '',
-    'Que el hecho fue denunciado por la Sra. María de los Ángeles FERNÁNDEZ, DNI 31.222.333, teléfono 11 4567-8901, correo electrónico mfernandez@gmail.com, quien refirió que el vehículo dominio AB 123 CD fue retenido sin causa;',
-    '',
-    'Que el sumariado Pérez Gómez presentó su descargo a través de su letrado, el Dr. Roberto Luis Álvarez, quien ofreció como testigo al Sargento Diego RAMÍREZ (LP 45678);',
-    '',
-    'Que el Oficial Pérez Gómez, nacido el 03/04/1985, percibió haberes en la cuenta CBU 0720123420000001234567;',
-    '',
-    'Que la Dirección General de Asuntos Jurídicos tomó la intervención de su competencia;',
-    '',
-    'Que el monto del perjuicio asciende a $ 1.250.000;',
-    '',
-    'Por ello, en uso de las facultades conferidas por la Ley N° 5.688,',
-    '',
-    'EL MINISTRO DE SEGURIDAD',
-    'RESUELVE:',
-    '',
-    'Artículo 1°.- Aplícase al Oficial Primero LP 12.345 PÉREZ GÓMEZ, Juan Carlos la sanción de cesantía.',
-    '',
-    'Artículo 2°.- Regístrese, notifíquese al interesado y comuníquese a la Superintendencia de Recursos Humanos.',
-    '',
-    'Horacio GIMÉNEZ',
-    'Ministro de Seguridad'
-  ].join('\n');
+  // --- Compatibilidad --------------------------------------------------
+  // El motor usa expresiones regulares modernas (Chrome/Edge 90 o posterior).
+  try {
+    new RegExp('(?<=a)(?<v>\\p{L})', 'gdu');
+  } catch (e) {
+    document.getElementById('incompatible').hidden = false;
+    return;
+  }
+
+  var A = window.Anonimizador;
+  var X = window.Exportar;
+  var $ = function (id) { return document.getElementById(id); };
+  var EJEMPLO = $('texto-ejemplo').textContent;
+  var PRESERVAR_EJEMPLO = 'Horacio Giménez';
+
+  // En una página incrustada (por ejemplo, vista previa en claude.ai) el
+  // navegador bloquea las descargas: esos botones se ocultan.
+  var puedeDescargar = (function () { try { return window.top === window.self; } catch (e) { return false; } })();
+  if (!puedeDescargar) {
+    document.querySelectorAll('.descarga').forEach(function (b) { b.hidden = true; });
+    $('copiar').classList.add('principal');
+  }
 
   var NOMBRES_TIPO = {
     'PERSONA': 'Nombres de personas',
@@ -292,33 +347,71 @@
     'EMAIL': 'Correos electrónicos',
     'CBU/CVU': 'CBU / CVU',
     'DOMINIO': 'Dominios de vehículos',
-    'FECHA DE NACIMIENTO': 'Fechas de nacimiento'
+    'FECHA DE NACIMIENTO': 'Fechas de nacimiento',
+    'EDAD': 'Edad',
+    'RESERVADO': 'Ocultados a mano'
   };
 
+  // --- Preferencias (solo en este navegador) ---------------------------
+  var guardar = function (k, v) { try { localStorage.setItem('anon-' + k, v); } catch (e) {} };
+  var leer = function (k) { try { return localStorage.getItem('anon-' + k); } catch (e) { return null; } };
+
   var tiposCont = $('tipos');
+  var tiposGuardados = {};
+  try { tiposGuardados = JSON.parse(leer('tipos') || '{}') || {}; } catch (e) {}
   Object.keys(NOMBRES_TIPO).forEach(function (t, i) {
+    if (t === 'RESERVADO') return;
     var id = 'tipo-' + i;
     var label = document.createElement('label');
     label.setAttribute('for', id);
-    label.innerHTML = '<input type="checkbox" checked id="' + id + '" data-tipo="' + t + '"> ';
+    var c = document.createElement('input');
+    c.type = 'checkbox';
+    c.id = id;
+    c.dataset.tipo = t;
+    c.checked = tiposGuardados[t] !== false;
+    label.appendChild(c);
     label.appendChild(document.createTextNode(NOMBRES_TIPO[t]));
     var n = document.createElement('span');
     n.className = 'n';
-    n.dataset.tipo = t;
+    n.dataset.cuenta = t;
     n.textContent = '0';
     tiposCont.appendChild(label);
     tiposCont.appendChild(n);
   });
 
-  var guardar = function (k, v) { try { localStorage.setItem('anon-' + k, v); } catch (e) {} };
-  var leer = function (k) { try { return localStorage.getItem('anon-' + k); } catch (e) { return null; } };
+  if (leer('modo') === 'iniciales') $('modo-iniciales').checked = true;
 
+  // --- Utilidades -----------------------------------------------------
   var lineas = function (s) { return s.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); };
   var ultimo = null;
+  var nombreArchivo = 'acto';
+
+  function avisar(msg) {
+    var el = $('aviso');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(avisar.t);
+    avisar.t = setTimeout(function () { el.hidden = true; }, 2800);
+  }
+
+  function agregarLinea(id, valor) {
+    var campo = $(id);
+    var actuales = lineas(campo.value);
+    var n = A.normalizar(valor);
+    if (actuales.some(function (x) { return A.normalizar(x) === n; })) return false;
+    campo.value = actuales.concat([valor.trim()]).join('\n');
+    return true;
+  }
+
+  function quitarLinea(id, valor) {
+    var campo = $(id);
+    var n = A.normalizar(valor);
+    campo.value = lineas(campo.value).filter(function (x) { return A.normalizar(x) !== n; }).join('\n');
+  }
 
   function opciones() {
     var tipos = {};
-    document.querySelectorAll('[data-tipo]').forEach(function (c) { if (c.type === 'checkbox') tipos[c.dataset.tipo] = c.checked; });
+    document.querySelectorAll('input[data-tipo]').forEach(function (c) { tipos[c.dataset.tipo] = c.checked; });
     return {
       tipos: tipos,
       preservar: lineas($('preservar').value),
@@ -327,33 +420,62 @@
     };
   }
 
+  // --- Proceso --------------------------------------------------------
   function procesar() {
-    var texto = $('entrada').value;
-    var r = A.anonimizar(texto, opciones());
+    var texto = $('entrada').value.replace(/\r\n?/g, '\n');
+    var op = opciones();
+    var r = A.anonimizar(texto, op);
     ultimo = r;
 
     var salida = $('salida');
+    var scroll = salida.scrollTop;
     salida.textContent = '';
     var cursor = 0;
     r.tramos.forEach(function (t) {
       salida.appendChild(document.createTextNode(texto.slice(cursor, t.ini)));
-      var s = document.createElement('span');
-      s.className = 'marca';
-      s.textContent = t.etiqueta;
-      s.title = t.tipo;
-      salida.appendChild(s);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'marca';
+      b.textContent = t.etiqueta;
+      b.title = (NOMBRES_TIPO[t.tipo] || t.tipo) + ': «' + t.valor + '». Clic para dejarlo visible.';
+      b.dataset.valor = t.valor;
+      b.dataset.tipo = t.tipo;
+      salida.appendChild(b);
       cursor = t.fin;
     });
     salida.appendChild(document.createTextNode(texto.slice(cursor)));
+    salida.scrollTop = scroll;
 
+    // Contadores por tipo
     var cuenta = {};
     r.entidades.forEach(function (e) { cuenta[e.tipo] = (cuenta[e.tipo] || 0) + 1; });
-    document.querySelectorAll('.tipos .n').forEach(function (n) {
-      var c = cuenta[n.dataset.tipo] || 0;
+    document.querySelectorAll('[data-cuenta]').forEach(function (n) {
+      var c = cuenta[n.dataset.cuenta] || 0;
       n.textContent = c;
       n.classList.toggle('hay', c > 0);
     });
 
+    // Resumen
+    var res = $('resumen');
+    res.textContent = '';
+    if (texto.trim()) {
+      var cifra = document.createElement('span');
+      cifra.className = 'cifra';
+      cifra.textContent = r.tramos.length;
+      var etiqueta = document.createElement('span');
+      etiqueta.textContent = r.tramos.length === 1 ? ' dato ocultado' : ' datos ocultados';
+      var grupo = document.createElement('span');
+      grupo.appendChild(cifra);
+      grupo.appendChild(etiqueta);
+      var personas = cuenta.PERSONA || 0;
+      var det = document.createElement('span');
+      det.textContent = personas + (personas === 1 ? ' persona' : ' personas') + ' · ' +
+        r.entidades.length + (r.entidades.length === 1 ? ' valor distinto' : ' valores distintos');
+      res.appendChild(grupo);
+      res.appendChild(det);
+    }
+
+    // Tabla de correspondencias
     var tbody = $('tabla');
     tbody.textContent = '';
     r.entidades.forEach(function (e) {
@@ -365,27 +487,51 @@
           td.textContent = c[1];
           tr.appendChild(td);
         });
+      var acc = document.createElement('td');
+      acc.className = 'acc';
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chico';
+      b.textContent = 'Dejar visible';
+      b.addEventListener('click', function () { dejarVisible(e.valores[0], e.tipo); });
+      acc.appendChild(b);
+      tr.appendChild(acc);
       tbody.appendChild(tr);
     });
     if (!r.entidades.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="nota">No se detectaron datos personales.</td></tr>';
+      var tr = document.createElement('tr');
+      var td = document.createElement('td');
+      td.colSpan = 5;
+      td.className = 'nota';
+      td.textContent = texto.trim() ? 'No se detectaron datos personales.' : 'Todavía no hay un acto cargado.';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
     }
+
+    var hay = !!texto.trim();
+    ['copiar', 'bajar-docx', 'bajar-csv', 'copiar-tabla'].forEach(function (id) { $(id).disabled = !hay; });
 
     guardar('preservar', $('preservar').value);
     guardar('adicionales', $('adicionales').value);
+    guardar('tipos', JSON.stringify(op.tipos));
+    guardar('modo', op.modoPersona);
   }
 
   var espera;
-  function programar() { clearTimeout(espera); espera = setTimeout(procesar, 120); }
+  function programar() { clearTimeout(espera); espera = setTimeout(procesar, 150); }
 
-  function avisar(msg) {
-    $('estado').textContent = msg;
-    clearTimeout(avisar.t);
-    avisar.t = setTimeout(function () { $('estado').textContent = ''; }, 2500);
+  function dejarVisible(valor, tipo) {
+    if (tipo === 'RESERVADO') {
+      quitarLinea('adicionales', valor);
+    } else {
+      agregarLinea('preservar', valor);
+    }
+    procesar();
+    avisar('Queda visible: ' + valor);
   }
 
+  // --- Copiar y descargar ----------------------------------------------
   function copiar(texto, msg, nodo) {
-    var ok = function () { avisar(msg); };
     var respaldo = function () {
       var sel = window.getSelection();
       var rango = document.createRange();
@@ -394,32 +540,107 @@
       sel.addRange(rango);
       avisar('Texto seleccionado: copialo con Ctrl+C.');
     };
-    try { navigator.clipboard.writeText(texto).then(ok, respaldo); } catch (e) { respaldo(); }
+    try { navigator.clipboard.writeText(texto).then(function () { avisar(msg); }, respaldo); } catch (e) { respaldo(); }
   }
+
+  function descargar(datos, nombre, tipo) {
+    var blob = new Blob([datos], { type: tipo });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = nombre;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    avisar('Descargado: ' + nombre);
+  }
+
+  $('copiar').addEventListener('click', function () {
+    if (ultimo) copiar(ultimo.texto, 'Texto anonimizado copiado.', $('salida'));
+  });
+  $('bajar-docx').addEventListener('click', function () {
+    if (!ultimo) return;
+    descargar(X.crearDocx(ultimo.texto), nombreArchivo + ' (anonimizado).docx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+  });
+  $('bajar-csv').addEventListener('click', function () {
+    if (!ultimo) return;
+    descargar('﻿' + A.correspondenciasCSV(ultimo), nombreArchivo + ' (correspondencias).csv', 'text/csv;charset=utf-8');
+  });
+  $('copiar-tabla').addEventListener('click', function () {
+    if (!ultimo) return;
+    var tsv = ['Etiqueta\tTipo\tValor original\tVeces'].concat(ultimo.entidades.map(function (e) {
+      return [e.etiqueta, e.tipo, e.valores.join(' | '), e.apariciones].join('\t');
+    })).join('\n');
+    copiar(tsv, 'Tabla copiada: se pega en Excel como columnas.', $('tabla'));
+  });
+
+  // --- Revisión manual -------------------------------------------------
+  $('salida').addEventListener('click', function (ev) {
+    var b = ev.target.closest('.marca');
+    if (b) dejarVisible(b.dataset.valor, b.dataset.tipo);
+  });
+
+  $('ocultar-seleccion').addEventListener('click', function () {
+    var e = $('entrada');
+    var sel = e.value.slice(e.selectionStart, e.selectionEnd).replace(/\s+/g, ' ').trim();
+    if (!sel) { avisar('Primero seleccioná en el original el texto a ocultar.'); e.focus(); return; }
+    if (sel.length > 120) { avisar('La selección es muy larga: marcá solo el dato a ocultar.'); return; }
+    quitarLinea('preservar', sel);
+    agregarLinea('adicionales', sel);
+    procesar();
+    avisar('Se oculta en todo el acto: ' + sel);
+  });
+
+  $('restablecer').addEventListener('click', function () {
+    document.querySelectorAll('input[data-tipo]').forEach(function (c) { c.checked = true; });
+    $('modo-etiqueta').checked = true;
+    $('preservar').value = '';
+    $('adicionales').value = '';
+    procesar();
+    avisar('Ajustes restablecidos.');
+  });
 
   $('entrada').addEventListener('input', programar);
   $('preservar').addEventListener('input', programar);
   $('adicionales').addEventListener('input', programar);
-  document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(function (c) { c.addEventListener('change', procesar); });
+  document.querySelectorAll('input[data-tipo], input[name="modo"]').forEach(function (c) { c.addEventListener('change', procesar); });
 
-  $('limpiar').addEventListener('click', function () { $('entrada').value = ''; procesar(); $('entrada').focus(); });
-  $('cargar-ejemplo').addEventListener('click', function () {
-    $('entrada').value = EJEMPLO;
-    if (!$('preservar').value.trim()) $('preservar').value = 'Horacio Giménez';
+  $('limpiar').addEventListener('click', function () {
+    $('entrada').value = '';
+    nombreArchivo = 'acto';
+    mostrarArchivo('');
     procesar();
+    $('entrada').focus();
   });
+  $('cargar-ejemplo').addEventListener('click', cargarEjemplo);
+
+  function cargarEjemplo() {
+    $('entrada').value = EJEMPLO;
+    nombreArchivo = 'ejemplo';
+    if (!lineas($('preservar').value).length) $('preservar').value = PRESERVAR_EJEMPLO;
+    mostrarArchivo('Acto de ejemplo (ficticio). Cargá el tuyo para reemplazarlo.');
+    procesar();
+  }
 
   // --- Carga de archivos -------------------------------------------------
-  // Las bibliotecas de PDF y Word se cargan solo cuando hacen falta y desde
-  // la carpeta vendor/, así el archivo nunca se envía a otro sitio.
+  // PDF.js y mammoth.js van incluidas (en la versión de un solo archivo) o
+  // en vendor/. Nunca se descargan de internet.
+  var GLOBALES = {
+    'vendor/pdf.worker.min.js': 'pdfjsWorker',
+    'vendor/pdf.min.js': 'pdfjsLib',
+    'vendor/mammoth.browser.min.js': 'mammoth'
+  };
   var cargados = {};
   function cargarScript(src) {
+    if (window[GLOBALES[src]]) return Promise.resolve();
     if (!cargados[src]) {
       cargados[src] = new Promise(function (ok, mal) {
         var s = document.createElement('script');
         s.src = src;
         s.onload = ok;
-        s.onerror = function () { mal(new Error('No se pudo cargar ' + src)); };
+        s.onerror = function () { mal(new Error('falta el archivo ' + src + ' junto a la página')); };
         document.head.appendChild(s);
       });
     }
@@ -435,9 +656,64 @@
     });
   }
 
+  // Arma los renglones del PDF a partir de la posición de cada fragmento.
+  function textoDePagina(contenido) {
+    var renglones = [];
+    contenido.items.forEach(function (it) {
+      if (!it.str && !it.hasEOL) return;
+      var y = it.transform[5];
+      var x = it.transform[4];
+      var h = Math.abs(it.transform[3]) || it.height || 10;
+      var r = renglones.length ? renglones[renglones.length - 1] : null;
+      if (!r || Math.abs(r.y - y) > h * 0.45) {
+        r = { y: y, h: h, partes: [] };
+        renglones.push(r);
+      }
+      r.partes.push({ x: x, s: it.str, fin: x + (it.width || 0) });
+    });
+    var out = '';
+    var prev = null;
+    renglones.forEach(function (r) {
+      r.partes.sort(function (a, b) { return a.x - b.x; });
+      var linea = '';
+      var finAnt = null;
+      r.partes.forEach(function (p) {
+        if (finAnt !== null && p.x - finAnt > r.h * 0.2 && !/\s$/.test(linea) && !/^\s/.test(p.s)) linea += ' ';
+        linea += p.s;
+        finAnt = p.fin;
+      });
+      linea = linea.replace(/\s+$/, '');
+      if (prev !== null) out += (prev.y - r.y) > prev.h * 1.9 ? '\n\n' : '\n';
+      out += linea;
+      prev = r;
+    });
+    return out;
+  }
+
+  // En el PDF cada párrafo llega cortado en renglones visuales. Se unen los
+  // renglones largos que no terminan en puntuación de cierre, para que el
+  // párrafo vuelva a ser uno (y el Word descargado quede prolijo). Los
+  // renglones cortos (membrete, firma, cargo) se dejan como están.
+  function unirRenglones(texto) {
+    var lineas = texto.split('\n');
+    var ancho = lineas.reduce(function (m, l) { return Math.max(m, l.length); }, 0);
+    var out = [];
+    lineas.forEach(function (l) {
+      var prev = out.length ? out[out.length - 1] : null;
+      var ultimaFisica = prev === null ? '' : prev.slice(prev.lastIndexOf('\u0001') + 1);
+      var seUne = prev !== null && l.trim() && prev.trim() &&
+        ultimaFisica.length >= ancho * 0.7 && !/[.:;]$/.test(ultimaFisica.trim());
+      if (!seUne) { out.push(l); return; }
+      if (/\p{Ll}-$/u.test(prev) && /^\p{Ll}/u.test(l)) out[out.length - 1] = prev.slice(0, -1) + '\u0001' + l;
+      else if (/-$/.test(prev)) out[out.length - 1] = prev + '\u0001' + l;
+      else out[out.length - 1] = prev + ' \u0001' + l;
+    });
+    return out.join('\n').replace(/\u0001/g, '');
+  }
+
   function textoDePdf(buf) {
-    // El worker se carga como script para que funcione también al abrir la
-    // página desde el disco (file://).
+    // El worker se carga en la misma página para que funcione también al
+    // abrir el archivo desde el disco (file://), donde Chrome no admite workers.
     return cargarScript('vendor/pdf.worker.min.js')
       .then(function () { return cargarScript('vendor/pdf.min.js'); })
       .then(function () {
@@ -449,31 +725,22 @@
         var paginas = [];
         for (var i = 1; i <= doc.numPages; i++) paginas.push(i);
         return Promise.all(paginas.map(function (n) {
-          return doc.getPage(n).then(function (p) { return p.getTextContent(); }).then(function (c) {
-            var out = '';
-            var yPrev = null;
-            c.items.forEach(function (it) {
-              var y = it.transform ? it.transform[5] : null;
-              // Un salto grande de renglón marca un párrafo nuevo.
-              if (yPrev !== null && y !== null && out && !out.endsWith('\n') && Math.abs(y - yPrev) > 2) out += '\n';
-              if (yPrev !== null && y !== null && Math.abs(yPrev - y) > (it.height || 10) * 1.9 && !out.endsWith('\n\n')) out += '\n';
-              out += it.str;
-              if (it.hasEOL) out += '\n';
-              if (y !== null && it.str) yPrev = y;
-            });
-            return out;
-          });
+          return doc.getPage(n).then(function (p) { return p.getTextContent(); }).then(textoDePagina);
         }));
       })
       .then(function (paginas) {
-        return paginas.join('\n\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+        return unirRenglones(paginas.join('\n\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim());
       });
   }
 
   function textoDeDocx(buf) {
     return cargarScript('vendor/mammoth.browser.min.js').then(function () {
       return window.mammoth.extractRawText({ arrayBuffer: buf });
-    }).then(function (r) { return r.value.replace(/\n{3,}/g, '\n\n').trim(); });
+    }).then(function (r) {
+      // mammoth separa cada párrafo con un renglón en blanco: se vuelve a un
+      // párrafo por renglón y los párrafos vacíos quedan como renglón en blanco.
+      return r.value.replace(/\r/g, '').split('\n\n').join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    });
   }
 
   function mostrarArchivo(msg, error) {
@@ -491,7 +758,7 @@
       tarea = leerComo(f).then(textoDePdf);
     } else if (ext === 'docx') {
       tarea = leerComo(f).then(textoDeDocx);
-    } else if (ext === 'txt' || ext === 'text' || (f.type || '').indexOf('text/') === 0) {
+    } else if (ext === 'txt' || (f.type || '').indexOf('text/') === 0) {
       tarea = leerComo(f, 'texto');
     } else if (ext === 'doc') {
       mostrarArchivo('Formato .doc antiguo: abrilo en Word y guardalo como .docx o PDF.', true);
@@ -507,6 +774,7 @@
         return;
       }
       $('entrada').value = texto;
+      nombreArchivo = nombre.replace(/\.[^.]+$/, '') || 'acto';
       procesar();
       $('salida').scrollTop = 0;
       $('entrada').scrollTop = 0;
@@ -524,47 +792,32 @@
   // Se puede soltar el archivo en cualquier parte de la página.
   var zona = $('carga');
   var profundidad = 0;
+  var conArchivos = function (ev) {
+    return ev.dataTransfer && Array.prototype.indexOf.call(ev.dataTransfer.types || [], 'Files') !== -1;
+  };
   document.addEventListener('dragenter', function (ev) {
-    if (ev.dataTransfer && Array.prototype.indexOf.call(ev.dataTransfer.types, 'Files') !== -1) {
-      profundidad++;
-      zona.classList.add('encima');
-    }
+    if (!conArchivos(ev)) return;
+    profundidad++;
+    zona.classList.add('encima');
   });
-  document.addEventListener('dragleave', function () {
+  document.addEventListener('dragleave', function (ev) {
+    if (!conArchivos(ev)) return;
     profundidad = Math.max(0, profundidad - 1);
     if (!profundidad) zona.classList.remove('encima');
   });
-  document.addEventListener('dragover', function (ev) { ev.preventDefault(); });
+  document.addEventListener('dragover', function (ev) { if (conArchivos(ev)) ev.preventDefault(); });
   document.addEventListener('drop', function (ev) {
+    if (!conArchivos(ev)) return;
     ev.preventDefault();
     profundidad = 0;
     zona.classList.remove('encima');
-    var f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
-    if (f) cargarArchivo(f);
+    cargarArchivo(ev.dataTransfer.files[0]);
   });
 
-  $('ver-tachado').addEventListener('click', function () {
-    var on = $('salida').classList.toggle('tachar');
-    this.setAttribute('aria-pressed', String(on));
-    this.textContent = on ? 'Ver etiquetas' : 'Ver tachado';
-  });
-
-  $('copiar').addEventListener('click', function () {
-    if (ultimo) copiar(ultimo.texto, 'Texto anonimizado copiado.', $('salida'));
-  });
-  $('copiar-tabla').addEventListener('click', function () {
-    if (!ultimo) return;
-    var tsv = ['Etiqueta\tTipo\tValor original\tVeces'].concat(ultimo.entidades.map(function (e) {
-      return [e.etiqueta, e.tipo, e.valores.join(' | '), e.apariciones].join('\t');
-    })).join('\n');
-    copiar(tsv, 'Tabla copiada: se pega en Excel como columnas.', $('tabla'));
-  });
-
-  var p = leer('preservar'); if (p) $('preservar').value = p;
-  var a = leer('adicionales'); if (a) $('adicionales').value = a;
-  $('entrada').value = EJEMPLO;
-  if (!$('preservar').value.trim()) $('preservar').value = 'Horacio Giménez';
-  procesar();
+  // --- Inicio -----------------------------------------------------------
+  var p = leer('preservar'); if (p !== null) $('preservar').value = p;
+  var a = leer('adicionales'); if (a !== null) $('adicionales').value = a;
+  cargarEjemplo();
 })();
 </script>
 </body>
