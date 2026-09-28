@@ -61,7 +61,7 @@
   header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
   h1 { font-family: var(--serif); font-weight: 700; font-size: 28px; line-height: 1.15; margin: 0; text-wrap: balance; }
   .bajada { margin: 4px 0 0; color: var(--tenue); max-width: 68ch; }
-  .garantias { display: flex; flex-wrap: wrap; gap: 6px; }
+  .garantias { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .pastilla {
     font-family: var(--mono); font-size: 12px; letter-spacing: .03em; white-space: nowrap;
     color: var(--ok); background: var(--ok-fondo); padding: 3px 9px; border-radius: 3px;
@@ -180,6 +180,7 @@
       <p class="bajada">Cargá una resolución, disposición, decreto o dictamen. Los datos personales se reemplazan por etiquetas: la misma persona conserva la misma etiqueta en todo el acto, aunque aparezca escrita de formas distintas.</p>
     </div>
     <div class="garantias">
+      <button type="button" class="principal" id="bajar-app" hidden title="Un solo archivo .html que se abre con doble clic en Chrome o Edge, sin internet">Descargar para la PC del trabajo</button>
       <span class="pastilla">Funciona sin internet</span>
       <span class="pastilla">El acto no sale de esta computadora</span>
     </div>
@@ -329,12 +330,25 @@ Ministro de Seguridad</script>
   var EJEMPLO = $('texto-ejemplo').textContent;
   var PRESERVAR_EJEMPLO = 'Horacio Giménez';
 
-  // En una página incrustada (por ejemplo, vista previa en claude.ai) el
-  // navegador bloquea las descargas: esos botones se ocultan.
+  // Abierto como archivo (doble clic) las descargas son directas. Publicado
+  // en claude.ai la página va incrustada y descarga a través del permiso
+  // "downloads" del visor; si no está disponible, esos botones se ocultan.
   var puedeDescargar = (function () { try { return window.top === window.self; } catch (e) { return false; } })();
+  var descargas = null;
+  function mostrarDescargas(si) {
+    document.querySelectorAll('.descarga').forEach(function (b) { b.hidden = !si; });
+    $('copiar').classList.toggle('principal', !si);
+  }
   if (!puedeDescargar) {
-    document.querySelectorAll('.descarga').forEach(function (b) { b.hidden = true; });
-    $('copiar').classList.add('principal');
+    mostrarDescargas(false);
+    if (window.claude && typeof window.claude.use === 'function') {
+      window.claude.use('downloads').then(function (d) {
+        if (!d) return;
+        descargas = d;
+        mostrarDescargas(true);
+        $('bajar-app').hidden = false;
+      }, function () {});
+    }
   }
 
   var NOMBRES_TIPO = {
@@ -544,6 +558,22 @@ Ministro de Seguridad</script>
   }
 
   function descargar(datos, nombre, tipo) {
+    if (descargas) {
+      descargas.save({ filename: nombre, data: new Blob([datos], { type: tipo }) }).then(function () {
+        avisar('Descargado: ' + nombre);
+      }, function (e) {
+        var c = e && e.code;
+        if (c === 'declined') return;
+        if (c === 'rate_limited') { avisar('Ya hay una descarga esperando confirmación.'); return; }
+        avisar('No se pudo descargar ' + nombre + '.');
+        if (c === 'unavailable' || c === 'not_granted' || c === 'capability_disabled' || c === 'capability_removed') {
+          descargas = null;
+          mostrarDescargas(false);
+          $('bajar-app').hidden = true;
+        }
+      });
+      return;
+    }
     var blob = new Blob([datos], { type: tipo });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -568,6 +598,20 @@ Ministro de Seguridad</script>
     if (!ultimo) return;
     descargar('﻿' + A.correspondenciasCSV(ultimo), nombreArchivo + ' (correspondencias).csv', 'text/csv;charset=utf-8');
   });
+  // Solo en la versión publicada: baja el archivo único para usar sin internet.
+  $('bajar-app').addEventListener('click', function () {
+    var b = this;
+    b.disabled = true;
+    fetch('anonimizador-actos.html').then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.blob();
+    }).then(function (html) {
+      descargar(html, 'Anonimizador de actos.html', 'text/html');
+    }).catch(function () {
+      avisar('No se pudo obtener el archivo. Probá de nuevo en unos segundos.');
+    }).then(function () { b.disabled = false; });
+  });
+
   $('copiar-tabla').addEventListener('click', function () {
     if (!ultimo) return;
     var tsv = ['Etiqueta\tTipo\tValor original\tVeces'].concat(ultimo.entidades.map(function (e) {
