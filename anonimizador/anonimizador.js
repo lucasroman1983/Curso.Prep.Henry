@@ -133,20 +133,20 @@
   // Una palabra de nombre: empieza en mayúscula ("Pérez", "PÉREZ", "O'Connor",
   // "Pérez-Gómez").
   var PALABRA = "\\p{Lu}[\\p{L}'’]*(?:-\\p{Lu}[\\p{L}'’]*)*";
-  var SEP_NOMBRE = "(?:,?[ \\t]+(?:(?:de|del|la|las|los|y)[ \\t]+)*)";
+  var SEP_NOMBRE = "(?:,?(?:[ \\t]+\\n?|\\n)[ \\t]*(?:(?:de|del|la|las|los|y)(?:[ \\t]+\\n?|\\n)[ \\t]*)*)";
   var NOMBRE = PALABRA + '(?:' + SEP_NOMBRE + PALABRA + '){0,6}';
 
   // Lo que puede aparecer entre el cargo y el nombre: "(LP 12.345)",
   // "LP N° 12345,", "D.N.I. 20.123.456".
   var ENTRE = '(?:[ \\t]*\\(?(?:' + ci('l.p.') + '|' + ci('lp') + '|' + ci('legajo') +
-    '(?:[ \\t]+' + ci('personal') + ')?)[ \\t]*(?:[nN][°ºo.]*[ \\t]*)?[\\d.]+\\)?[ \\t]*,?)?';
+    '(?:(?:[ \\t]+\\n?|\\n)[ \\t]*' + ci('personal') + ')?)[ \\t]*(?:[nN][°ºo.]*[ \\t]*)?[\\d.]+\\)?[ \\t]*,?)?';
 
   // ---------------------------------------------------------------------
   // Detectores. Cada uno devuelve el tramo a reemplazar en el grupo "v";
   // el resto del patrón (rótulos como "DNI N°") queda como está.
   // ---------------------------------------------------------------------
 
-  var N_ROT = '(?:[ \\t]*(?:[nN][°º]|[nN][rR][oO]\\.?|[nN]\\.|' + ci('número') + '|' + ci('numero') + '))?[ \\t]*:?[ \\t]*';
+  var N_ROT = '(?:[ \\t]*(?:[nN][°º]|[nN][rR][oO]\\.?|[nN]\\.|' + ci('número') + '|' + ci('numero') + '))?[ \\t]*:?[ \\t]*\\n?[ \\t]*';
 
   var DETECTORES = [
     {
@@ -226,19 +226,19 @@
       prioridad: 1,
       re: '(?:' + ci('nacido el') + '|' + ci('nacida el') + '|' + ci('nacido en fecha') + '|' +
         ci('nacida en fecha') + '|' + ci('fecha de nacimiento') + '|' + ci('f. de nac.') + '|' +
-        ci('f. nac.') + ')[ \\t]*:?[ \\t]*' +
-        '(?<v>\\d{1,2}[/.-]\\d{1,2}[/.-]\\d{2,4}|\\d{1,2}[ \\t]+de[ \\t]+\\p{L}+[ \\t]+de[ \\t]+\\d{4})',
+        ci('f. nac.') + ')[ \\t]*:?[ \\t]*\\n?[ \\t]*' +
+        '(?<v>\\d{1,2}[/.-]\\d{1,2}[/.-]\\d{2,4}|\\d{1,2}(?:[ \\t]+\\n?|\\n)[ \\t]*de(?:[ \\t]+\\n?|\\n)[ \\t]*\\p{L}+(?:[ \\t]+\\n?|\\n)[ \\t]*de(?:[ \\t]+\\n?|\\n)[ \\t]*\\d{4})',
       clave: normalizar
     },
     {
       tipo: 'DOMICILIO',
       prioridad: 1,
-      re: '(?:' + ci('domicilio') + '(?:[ \\t]+(?:' + ci('real') + '|' + ci('legal') + '|' +
+      re: '(?:' + ci('domicilio') + '(?:(?:[ \\t]+\\n?|\\n)[ \\t]*(?:' + ci('real') + '|' + ci('legal') + '|' +
         ci('constituido') + '|' + ci('particular') + '|' + ci('denunciado') + '))?|' +
         ci('domiciliado') + '|' + ci('domiciliada') + '|' + ci('reside') + '|' + ci('residente') +
-        '|' + ci('con domicilio') + ')(?:[ \\t]+(?:' + ci('sito') + '|' + ci('sita') + '|' +
-        ci('ubicado') + '|' + ci('ubicada') + '))?[ \\t]+(?:' + ci('en') + '[ \\t]+)?' +
-        '(?:(?:la|el)[ \\t]+)?' + domicilioValor(true),
+        '|' + ci('con domicilio') + ')(?:(?:[ \\t]+\\n?|\\n)[ \\t]*(?:' + ci('sito') + '|' + ci('sita') + '|' +
+        ci('ubicado') + '|' + ci('ubicada') + '))?(?:[ \\t]+\\n?|\\n)[ \\t]*(?:' + ci('en') + '(?:[ \\t]+\\n?|\\n)[ \\t]*)?' +
+        '(?:(?:la|el)(?:[ \\t]+\\n?|\\n)[ \\t]*)?' + domicilioValor(true),
       clave: normalizar
     },
     {
@@ -246,7 +246,7 @@
       prioridad: 2,
       re: INI + '(?:' + ci('calle') + '|' + ci('avenida') + '|' + ci('av.') + '|' + ci('avda.') +
         '|' + ci('pasaje') + '|' + ci('pje.') + '|' + ci('boulevard') + '|' + ci('bv.') + '|' +
-        ci('diagonal') + ')[ \\t]+' + domicilioValor(false),
+        ci('diagonal') + ')(?:[ \\t]+\\n?|\\n)[ \\t]*' + domicilioValor(false),
       clave: normalizar
     }
   ];
@@ -255,10 +255,10 @@
     var prefijo = conPrefijo
       ? '(?:(?:' + ci('calle') + '|' + ci('avenida') + '|' + ci('av.') + '|' + ci('avda.') +
         '|' + ci('pasaje') + '|' + ci('pje.') + '|' + ci('boulevard') + '|' + ci('bv.') +
-        '|' + ci('diagonal') + ')[ \\t]+)?'
+        '|' + ci('diagonal') + ')(?:[ \\t]+\\n?|\\n)[ \\t]*)?'
       : '';
     var parte = "(?:\\p{Lu}[\\p{L}.'’]*|\\d{1,2}|de|del|la|las|los|y)";
-    return '(?<v>' + prefijo + parte + '(?:[ \\t]+' + parte + '){0,6}?[ \\t]+' +
+    return '(?<v>' + prefijo + parte + '(?:(?:[ \\t]+\\n?|\\n)[ \\t]*' + parte + '){0,6}?(?:[ \\t]+\\n?|\\n)[ \\t]*' +
       '(?:[nN][°º][ \\t]*|[nN][rR][oO]\\.?[ \\t]*)?\\d{1,5}' + FIN +
       '(?:[ \\t]*,?[ \\t]*(?:' + ci('piso') + '|' + ci('p.') + ')[ \\t]*[\\p{L}\\d°º]+)?' +
       '(?:[ \\t]*,?[ \\t]*(?:' + ci('departamento') + '|' + ci('depto.') + '|' + ci('depto') +
@@ -288,7 +288,7 @@
     var utiles = [palabras[0]];
     for (var i = 1; i < palabras.length; i++) {
       var medio = texto.slice(palabras[i - 1].fin, palabras[i].ini);
-      if (!/^,?[ \t]+(?:(?:de|del|la|las|los|y)[ \t]+)*$/.test(medio)) break;
+      if (!/^,?(?:[ \t]+\n?|\n)[ \t]*(?:(?:de|del|la|las|los|y)(?:[ \t]+\n?|\n)[ \t]*)*$/.test(medio)) break;
       utiles.push(palabras[i]);
     }
     var total = utiles.map(function (p) { return p.n; }).join('').length;
@@ -339,9 +339,9 @@
 
     // 1) Tras un cargo o tratamiento: "al Oficial Primero LP 12345 PÉREZ, Juan".
     var disp = DISPARADORES.map(function (d) {
-      return ci(d).replace(/ /g, '[ \\t]+');
+      return ci(d).replace(/ /g, '(?:[ \\t]+\\n?|\\n)[ \\t]*');
     }).join('|');
-    var reDisp = new RegExp(INI + '(?:' + disp + ')(?:[ \\t]+|(?<=\\.))' + ENTRE + '[ \\t]*(?<v>' + NOMBRE + ')', 'gdu');
+    var reDisp = new RegExp(INI + '(?:' + disp + ')(?:(?:[ \\t]+\\n?|\\n)[ \\t]*|(?<=\\.))' + ENTRE + '[ \\t]*(?<v>' + NOMBRE + ')', 'gdu');
     var m;
     while ((m = reDisp.exec(texto))) {
       agregar(m.indices.groups.v[0], m.groups.v, 4);
@@ -351,8 +351,8 @@
     // 2) Formato de nómina: "PÉREZ, Juan Carlos" / "PÉREZ GÓMEZ, María".
     var MAY = "\\p{Lu}[\\p{Lu}'’]+(?:-\\p{Lu}[\\p{Lu}'’]+)*";
     var CAP = "\\p{Lu}\\p{Ll}[\\p{Ll}'’]*";
-    var reNomina = new RegExp(INI + '(?<v>' + MAY + '(?:[ \\t]+(?:(?:DE|DEL|LA|LOS|Y)[ \\t]+)*' + MAY + ')*,[ \\t]+' +
-      CAP + '(?:[ \\t]+(?:(?:de|del|la|las|los|y)[ \\t]+)*' + CAP + ')*)' + FIN, 'gdu');
+    var reNomina = new RegExp(INI + '(?<v>' + MAY + '(?:(?:[ \\t]+\\n?|\\n)[ \\t]*(?:(?:DE|DEL|LA|LOS|Y)(?:[ \\t]+\\n?|\\n)[ \\t]*)*' + MAY + ')*,(?:[ \\t]+\\n?|\\n)[ \\t]*' +
+      CAP + '(?:(?:[ \\t]+\\n?|\\n)[ \\t]*(?:(?:de|del|la|las|los|y)(?:[ \\t]+\\n?|\\n)[ \\t]*)*' + CAP + ')*)' + FIN, 'gdu');
     while ((m = reNomina.exec(texto))) {
       var v = m.groups.v;
       var antes = v.slice(0, v.indexOf(','));
@@ -481,7 +481,7 @@
       var m;
       while ((m = re.exec(texto))) {
         var idx = m.indices.groups.v;
-        var v = m.groups.v.replace(/[ \t,.]+$/, '');
+        var v = m.groups.v.replace(/[\s,.]+$/, '');
         candidatos.push({
           ini: idx[0], fin: idx[0] + v.length, tipo: d.tipo, valor: v,
           prioridad: d.prioridad, clave: d.clave(v)

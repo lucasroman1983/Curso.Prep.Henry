@@ -6,7 +6,7 @@ misma etiqueta en todo el texto aunque aparezca escrita de formas distintas:
 `PÉREZ GÓMEZ, Juan Carlos`, `el sumariado Pérez Gómez` y `el Oficial Pérez Gómez`
 pasan a ser `[PERSONA 1]`.
 
-Todo corre localmente. No usa servicios externos ni dependencias.
+Todo corre localmente. El archivo del acto no se envía a ningún servidor.
 
 ## Qué detecta
 
@@ -24,9 +24,15 @@ No toca números de expediente (`EX-…`, `IF-…`), normas, montos, fechas del 
 
 ## Uso
 
-**Navegador:** abrir `index.html`. Pegar el texto, ajustar qué ocultar, copiar el resultado.
+**Navegador:** abrir `index.html` y cargar el acto en el recuadro "Cargar acto administrativo" (arrastrando el archivo o eligiéndolo). Acepta:
 
-**Línea de comandos:**
+- **PDF** con texto seleccionable (los que genera GDE). Un PDF escaneado no tiene texto: hay que pasarlo por OCR antes.
+- **Word .docx**. Un `.doc` antiguo hay que guardarlo antes como `.docx` o PDF.
+- **.txt**, o pegar el texto directamente.
+
+Después se ajusta qué ocultar y se copia el resultado. La lectura de PDF y Word usa PDF.js y mammoth.js, incluidas en `vendor/` (ver `vendor/LICENCIAS.md`).
+
+**Línea de comandos** (solo texto plano):
 
 ```bash
 node anonimizador/cli.js acto.txt --salida acto-anon.txt --tabla correspondencias.csv \

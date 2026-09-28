@@ -125,7 +125,28 @@
   .aviso { background: var(--alerta-fondo); color: var(--alerta); border-radius: 3px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
   .nota { font-size: 12.5px; color: var(--tenue); margin: 0; }
   .estado { font-size: 12.5px; color: var(--ok); min-height: 1.2em; }
-  #archivo { display: none; }
+  .carga {
+    position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+    border: 2px dashed color-mix(in srgb, var(--sello) 45%, var(--linea)); border-radius: 6px;
+    background: var(--hoja); padding: 18px 20px; cursor: pointer;
+  }
+  .carga:hover, .carga.encima { border-color: var(--sello); background: var(--sello-suave); }
+  .carga:focus-within { outline: 2px solid var(--sello); outline-offset: 2px; }
+  .carga-icono {
+    flex: none; width: 44px; height: 54px; border: 2px solid var(--sello); border-radius: 3px;
+    position: relative; background: var(--hoja);
+  }
+  .carga-icono::before, .carga-icono::after {
+    content: ""; position: absolute; left: 8px; right: 8px; height: 2px; background: var(--sello); top: 16px;
+    box-shadow: 0 8px 0 var(--sello), 0 16px 0 var(--sello);
+  }
+  .carga-icono::after { top: auto; bottom: 8px; right: 18px; box-shadow: none; }
+  .carga-texto { flex: 1 1 260px; display: grid; gap: 2px; }
+  .carga-titulo { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+  .carga-sub { font-size: 13px; color: var(--tenue); }
+  .carga-archivo { font-family: var(--mono); font-size: 12.5px; color: var(--sello); overflow-wrap: anywhere; }
+  .carga-archivo.error { color: var(--alerta); }
+  .carga input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -136,18 +157,27 @@
   <header>
     <div>
       <h1>Anonimizador de actos administrativos</h1>
-      <p class="bajada">Pegá el texto de una resolución, disposición, decreto o dictamen. Los datos personales se reemplazan por etiquetas consistentes: la misma persona conserva la misma etiqueta en todo el acto.</p>
+      <p class="bajada">Cargá una resolución, disposición, decreto o dictamen. Los datos personales se reemplazan por etiquetas consistentes: la misma persona conserva la misma etiqueta en todo el acto.</p>
     </div>
     <span class="local">El texto no sale de este navegador</span>
   </header>
 
+  <label class="carga" id="carga" for="archivo">
+    <span class="carga-icono" aria-hidden="true"></span>
+    <span class="carga-texto">
+      <span class="carga-titulo">Cargar acto administrativo</span>
+      <span class="carga-sub">Arrastrá el archivo acá o hacé clic para elegirlo. PDF (GDE), Word (.docx) o texto (.txt).</span>
+      <span class="carga-archivo" id="carga-archivo" role="status"></span>
+    </span>
+    <span class="boton">Elegir archivo</span>
+    <input type="file" id="archivo" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain">
+  </label>
+
   <div class="mesa">
     <section class="hoja" aria-label="Texto original">
       <div class="hoja-cab">
-        <span class="rotulo">Original</span>
+        <span class="rotulo">Original · editable</span>
         <div class="acciones">
-          <label class="boton" for="archivo">Abrir .txt</label>
-          <input type="file" id="archivo" accept=".txt,text/plain">
           <button type="button" id="limpiar">Vaciar</button>
           <button type="button" id="cargar-ejemplo">Ejemplo</button>
         </div>
@@ -379,13 +409,138 @@
     procesar();
   });
 
-  $('archivo').addEventListener('change', function (ev) {
-    var f = ev.target.files && ev.target.files[0];
+  // --- Carga de archivos -------------------------------------------------
+  // Las bibliotecas de PDF y Word se cargan solo cuando hacen falta y desde
+  // la carpeta vendor/, así el archivo nunca se envía a otro sitio.
+  var cargados = {};
+  function cargarScript(src) {
+    if (!cargados[src]) {
+      cargados[src] = new Promise(function (ok, mal) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.onload = ok;
+        s.onerror = function () { mal(new Error('No se pudo cargar ' + src)); };
+        document.head.appendChild(s);
+      });
+    }
+    return cargados[src];
+  }
+
+  function leerComo(f, modo) {
+    return new Promise(function (ok, mal) {
+      var r = new FileReader();
+      r.onload = function () { ok(r.result); };
+      r.onerror = function () { mal(r.error); };
+      if (modo === 'texto') r.readAsText(f, 'utf-8'); else r.readAsArrayBuffer(f);
+    });
+  }
+
+  function textoDePdf(buf) {
+    // El worker se carga como script para que funcione también al abrir la
+    // página desde el disco (file://).
+    return cargarScript('vendor/pdf.worker.min.js')
+      .then(function () { return cargarScript('vendor/pdf.min.js'); })
+      .then(function () {
+        var pdfjs = window.pdfjsLib;
+        pdfjs.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
+        return pdfjs.getDocument({ data: new Uint8Array(buf), isEvalSupported: false }).promise;
+      })
+      .then(function (doc) {
+        var paginas = [];
+        for (var i = 1; i <= doc.numPages; i++) paginas.push(i);
+        return Promise.all(paginas.map(function (n) {
+          return doc.getPage(n).then(function (p) { return p.getTextContent(); }).then(function (c) {
+            var out = '';
+            var yPrev = null;
+            c.items.forEach(function (it) {
+              var y = it.transform ? it.transform[5] : null;
+              // Un salto grande de renglón marca un párrafo nuevo.
+              if (yPrev !== null && y !== null && out && !out.endsWith('\n') && Math.abs(y - yPrev) > 2) out += '\n';
+              if (yPrev !== null && y !== null && Math.abs(yPrev - y) > (it.height || 10) * 1.9 && !out.endsWith('\n\n')) out += '\n';
+              out += it.str;
+              if (it.hasEOL) out += '\n';
+              if (y !== null && it.str) yPrev = y;
+            });
+            return out;
+          });
+        }));
+      })
+      .then(function (paginas) {
+        return paginas.join('\n\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      });
+  }
+
+  function textoDeDocx(buf) {
+    return cargarScript('vendor/mammoth.browser.min.js').then(function () {
+      return window.mammoth.extractRawText({ arrayBuffer: buf });
+    }).then(function (r) { return r.value.replace(/\n{3,}/g, '\n\n').trim(); });
+  }
+
+  function mostrarArchivo(msg, error) {
+    var el = $('carga-archivo');
+    el.textContent = msg;
+    el.classList.toggle('error', !!error);
+  }
+
+  function cargarArchivo(f) {
     if (!f) return;
-    var lector = new FileReader();
-    lector.onload = function () { $('entrada').value = String(lector.result); procesar(); avisar('Cargado: ' + f.name); };
-    lector.readAsText(f, 'utf-8');
+    var nombre = f.name || 'archivo';
+    var ext = (nombre.split('.').pop() || '').toLowerCase();
+    var tarea;
+    if (ext === 'pdf' || f.type === 'application/pdf') {
+      tarea = leerComo(f).then(textoDePdf);
+    } else if (ext === 'docx') {
+      tarea = leerComo(f).then(textoDeDocx);
+    } else if (ext === 'txt' || ext === 'text' || (f.type || '').indexOf('text/') === 0) {
+      tarea = leerComo(f, 'texto');
+    } else if (ext === 'doc') {
+      mostrarArchivo('Formato .doc antiguo: abrilo en Word y guardalo como .docx o PDF.', true);
+      return;
+    } else {
+      mostrarArchivo('Formato no admitido (' + nombre + '). Usá PDF, .docx o .txt.', true);
+      return;
+    }
+    mostrarArchivo('Leyendo ' + nombre + '…');
+    tarea.then(function (texto) {
+      if (!String(texto).replace(/\s/g, '')) {
+        mostrarArchivo(nombre + ': no tiene texto seleccionable (parece escaneado). Pasalo por OCR o pegá el texto.', true);
+        return;
+      }
+      $('entrada').value = texto;
+      procesar();
+      $('salida').scrollTop = 0;
+      $('entrada').scrollTop = 0;
+      mostrarArchivo('Cargado: ' + nombre + ' · ' + texto.length.toLocaleString('es-AR') + ' caracteres');
+    }).catch(function (e) {
+      mostrarArchivo('No se pudo leer ' + nombre + ': ' + (e && e.message ? e.message : e), true);
+    });
+  }
+
+  $('archivo').addEventListener('change', function (ev) {
+    cargarArchivo(ev.target.files && ev.target.files[0]);
     ev.target.value = '';
+  });
+
+  // Se puede soltar el archivo en cualquier parte de la página.
+  var zona = $('carga');
+  var profundidad = 0;
+  document.addEventListener('dragenter', function (ev) {
+    if (ev.dataTransfer && Array.prototype.indexOf.call(ev.dataTransfer.types, 'Files') !== -1) {
+      profundidad++;
+      zona.classList.add('encima');
+    }
+  });
+  document.addEventListener('dragleave', function () {
+    profundidad = Math.max(0, profundidad - 1);
+    if (!profundidad) zona.classList.remove('encima');
+  });
+  document.addEventListener('dragover', function (ev) { ev.preventDefault(); });
+  document.addEventListener('drop', function (ev) {
+    ev.preventDefault();
+    profundidad = 0;
+    zona.classList.remove('encima');
+    var f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+    if (f) cargarArchivo(f);
   });
 
   $('ver-tachado').addEventListener('click', function () {

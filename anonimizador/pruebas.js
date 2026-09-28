@@ -55,3 +55,8 @@ test('tabla de correspondencias en CSV', () => {
   assert.match(csv, /"\[PERSONA 1\]";"PERSONA";"Juan Pérez";"1"/);
   assert.match(csv, /"\[DNI 1\]";"DNI";"20.000.001";"1"/);
 });
+
+test('tolera saltos de renglón dentro de nombres (texto extraído de PDF)', () => {
+  const { texto } = anonimizar('su letrado, el Dr. Roberto Luis\nÁlvarez, ofreció al Sargento Diego\nRAMÍREZ (LP\n45678);\n\nHoracio GIMÉNEZ\nMinistro de Seguridad');
+  assert.strictEqual(texto, 'su letrado, el Dr. [PERSONA 1], ofreció al Sargento [PERSONA 2] (LP\n[LEGAJO 1]);\n\nHoracio GIMÉNEZ\nMinistro de Seguridad');
+});
